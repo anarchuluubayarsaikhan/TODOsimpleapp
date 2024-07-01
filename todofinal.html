@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+<body>
+    <div class="container is-flex is-justify-content-center">
+        <div>
+            <h4 class="title is-flex is-justify-content-space-between is-align-items-center">
+                <p>My ToDo list</p>
+                <span class="tag is-link">
+                    <p id="donenumber"></p> /
+                    <p id="listnumber"></p>
+                </span>
+            </h4>
+            <div id="allcontents"></div>
+            <input id="myinput" class="input mt-5" type="text" placeholder="what's next?" onkeydown="addonEnter(event)"/>
+            <button class="button is-link is-rounded mt-6" onclick="addtask()">Add a task</button>
+            <script>
+                const tasks =[{name:"Get out of bed", status:"todo"},
+                              {name:"Make breakfast", status:"todo"}, 
+                              {name:"Cold shower", status:"todo"}, 
+                              {name:"Get ready", status:"todo"}, 
+                              {name:"Workout", status:"todo"}]
+
+
+
+                function generate() {
+                    let tasksHTML = "";
+                    for (let i=0; i<tasks.length; i++) {
+                    const onetask = `
+                        <div class="card is-flex is-justify-content-space-between is-align-items-center ">
+                            <div class="card-content">
+                                <label class="checkbox">
+                                    <input id= "checkbox" type="checkbox" ${tasks[i].status ==="todo"?  "" : "checked"} onclick="donelist (${i})"/>
+                                    ${tasks[i].status === "todo" ? tasks[i].name : ` <s> ${tasks[i].name} </s> `}
+
+                                </label>
+                            </div>
+                            <div>
+                                <span class="icon">
+                                    <i class="fas fa-pen" onclick="edittask(${i})"></i>
+                                </span>
+                                <span class="icon">
+                                    <i class="fas fa-trash-alt" onclick="deleteitem(${i})"></i>
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    tasksHTML += onetask;
+                    } 
+                    document.getElementById("allcontents").innerHTML= tasksHTML;
+
+                    let listnumber = document.getElementById("listnumber");
+                    listnumber.innerText = tasks.length;
+
+                    let donenumber = document.getElementById ("donenumber")
+                    donenumber.innerText = countdone ();
+
+
+                } 
+
+                generate();
+
+                const input = document.getElementById("myinput");
+
+
+                function addtask() {
+                    if (input.value ==="") {
+                        return
+                }   tasks.push( {name: input.value, status:"todo"});
+                    input.value = "";
+                    generate();
+                }
+                
+
+
+                function deleteitem(n) {
+                    tasks.splice (n, 1);
+                    generate();
+                }
+
+                function edittask(m) {
+                    const name = prompt ('Enter the list', `${tasks[m].name}`); 
+                    if (name) {
+                        tasks[m].name = name
+                        generate();
+                    }
+                }
+
+                const checkbox = document.getElementById("checkbox")
+
+
+                function donelist (m){
+                 
+                    if (tasks[m].status === "done"){
+                    tasks[m].status = "todo";
+                        generate()
+                } else if (tasks[m].status === "todo"){
+                    tasks[m].status = "done";
+                     generate()
+                }} 
+            
+
+
+                function countdone (){
+                    let sum = 0;
+                    for (let i=0; i<tasks.length; i++){
+                        if (tasks[i].status === "done") {
+                            sum++;
+                        } 
+                    } 
+                    return sum;
+                }
+
+
+                function addonEnter(event) {
+                    if (event.key === "Enter") {
+                        addtask();
+                    }
+                }
+
+                const myJSON= JSON.stringify (tasks)
+                localStorage.setItem ("testJSON", myJSON);
+                let text = localStorage.getItem("testJSON");
+                let obj = JSON.parse(text);
+
+            </script>
+        </div>
+      </div>
+</body>
+</html>
